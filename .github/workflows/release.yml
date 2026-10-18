@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TAG: ${{ github.ref_name }}
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build and validate
+        run: python tools/package.py --tag "$TAG"
+      - name: Create draft and upload assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if state=$(gh release view "$TAG" --json isDraft --jq '.isDraft'); then
+            if [ "$state" != "true" ]; then
+              echo "Release already published; refusing to replace its assets."
+              exit 1
+            fi
+          else
+            flags=()
+            if [[ "$TAG" == *-* ]]; then flags+=(--prerelease); fi
+            gh release create "$TAG" --verify-tag --draft --title "fan.koplugin $TAG" --generate-notes "${flags[@]}"
+          fi
+          gh release upload "$TAG" dist/*.zip dist/*.zip.sha256 --clobber
+      - name: Publish completed release
+        run: gh release edit "$TAG" --draft=false

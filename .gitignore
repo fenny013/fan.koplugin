@@ -1,0 +1,12 @@
+.reference/
+.tools/
+__pycache__/
+*.pyc
+data/
+personal.ini
+cookies.txt
+dist/
+.venv/
+*.epub
+*.log
+tests/
