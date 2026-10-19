@@ -4,7 +4,7 @@
 
 ###### GPT-6 models were used to assist in the creation, because I have troubles with Lua AND EVEN MORE SO WITH PYTHON. Sorry.
 
-A Lua plugin for reading fanfiction in KOReader. Supports Ficbook, AO3 and `archiveofourown.gay`. No additional interpreter or server is required.
+A Lua plugin for reading fanfiction in KOReader. Supports Ficbook and AO3. No additional interpreter or server is required.
 
 # [DOWNLOADS](https://github.com/fenny013/fan.koplugin/releases/latest)
 
